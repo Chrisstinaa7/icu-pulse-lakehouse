@@ -1,0 +1,53 @@
+ # Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Azure / Databricks credentials — NEVER commit these
+*.env
+secrets.yml
+credentials.json
+service_principal.json
+connection_strings.txt
+
+# Databricks
+.databricks/
+
+# Delta Lake generated files
+_delta_log/
+_checkpoints/
+
+# Local test data
+local_data/
+test_output/
+*.parquet
+*.json.gz
+
+# Logs
+*.log
+logs/
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
