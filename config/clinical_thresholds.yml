@@ -1,0 +1,107 @@
+# Clinical Thresholds Configuration
+# Based on NHS NEWS2 (National Early Warning Score 2) Parameters
+
+vitals_thresholds:
+  heart_rate:
+    critical_low: 40      # < 40 bpm = severe bradycardia
+    low: 50
+    normal_min: 51
+    normal_max: 90
+    elevated: 91
+    high: 110
+    critical_high: 150     # > 150 bpm = severe tachycardia
+    unit: "bpm"
+  
+  oxygen_saturation:
+    critical_low: 90       # < 90% = hypoxia
+    low: 93
+    normal_min: 94
+    normal_max: 100
+    unit: "%"
+  
+  blood_pressure_systolic:
+    critical_low: 80       # < 80 mmHg = hypotensive
+    low: 90
+    normal_min: 91
+    normal_max: 140
+    elevated: 141
+    high: 180
+    critical_high: 220     # > 220 mmHg = hypertensive crisis
+    unit: "mmHg"
+  
+  blood_pressure_diastolic:
+    normal_min: 60
+    normal_max: 90
+    elevated: 91
+    high: 100
+    critical_high: 130
+    unit: "mmHg"
+  
+  respiratory_rate:
+    critical_low: 8        # < 8 = respiratory depression
+    low: 11
+    normal_min: 12
+    normal_max: 20
+    elevated: 21
+    critical_high: 25      # > 25 = respiratory distress
+    unit: "breaths/min"
+  
+  temperature:
+    critical_low: 35.0     # < 35°C = hypothermia
+    low: 36.0
+    normal_min: 36.1
+    normal_max: 37.9
+    elevated: 38.0
+    high: 38.5
+    critical_high: 39.1    # > 39°C = severe fever
+    unit: "°C"
+
+anomaly_detection:
+  rolling_window:
+    readings_count: 5      # Previous 5 readings
+    time_window_minutes: 25  # ~5 min intervals × 5 = 25 min
+  
+  sudden_change:
+    deviation_threshold: 0.20  # 20% deviation from rolling average
+    
+  baseline_calculation:
+    days: 90               # 90-day rolling baseline
+    minimum_readings: 20   # Need at least 20 readings for valid baseline
+
+alert_levels:
+  critical:
+    score_threshold: 3     # NEWS2 score >= 3
+    action: "IMMEDIATE_RESPONSE"
+    escalation: "RAPID_RESPONSE_TEAM"
+  
+  high:
+    score_threshold: 2
+    action: "URGENT_ASSESSMENT"
+    escalation: "SENIOR_NURSE"
+  
+  medium:
+    score_threshold: 1
+    action: "MONITOR_CLOSELY"
+    escalation: "ASSIGNED_NURSE"
+  
+  low:
+    score_threshold: 0
+    action: "ROUTINE_MONITORING"
+    escalation: "NONE"
+
+data_quality:
+  deduplication:
+    duplicate_rate_expected: 0.02  # 2% duplicate sends
+    window_seconds: 300            # Deduplicate within 5-min window
+  
+  late_arrivals:
+    watermark_minutes: 10          # 10-minute watermark for streaming
+    batch_reprocess_days: 3        # Batch reprocesses last 3 days
+  
+  quarantine_rules:
+    - name: "NULL_PRIMARY_KEY"
+      condition: "device_id IS NULL OR reading_id IS NULL"
+    - name: "INVALID_VITAL_RANGE"
+      condition: "heart_rate < 0 OR heart_rate > 300"
+    - name: "FUTURE_TIMESTAMP"
+      condition: "event_timestamp > CURRENT_TIMESTAMP + 1 hour"
