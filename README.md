@@ -34,13 +34,13 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              AZURE EVENT HUBS  (Kafka-compatible)            │
-│                    4 partitions · icu-vitals                 │
+│              AZURE EVENT HUBS  (Kafka-compatible)           │
+│                    4 partitions · icu-vitals                │
 └──────────────────────────┬──────────────────────────────────┘
                            │  Spark Structured Streaming
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    BRONZE LAYER  (Delta Lake)                │
+│                    BRONZE LAYER  (Delta Lake)               │
 │  ✓ Auto Loader — incremental, checkpoint-based              │
 │  ✓ Explicit schema enforcement (no inference)               │
 │  ✓ MERGE on reading_id — deduplication                      │
@@ -50,7 +50,7 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    SILVER LAYER  (Delta Lake)                │
+│                    SILVER LAYER  (Delta Lake)               │
 │  ✓ Clinical threshold validation (NHS NEWS2)                │
 │  ✓ Rolling 10-min average per device (window function)      │
 │  ✓ Sudden change detection: >20% deviation = WARNING        │
@@ -60,16 +60,16 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│               GOLD LAYER  (Delta Lake + Z-ORDER)             │
+│               GOLD LAYER  (Delta Lake + Z-ORDER)            │
 │  ├─ device_daily_metrics   → trend analysis & dashboards    │
-│  ├─ clinical_alerts        → nursing station real-time feed  │
+│  ├─ clinical_alerts        → nursing station real-time feed │
 │  ├─ ward_summary           → management KPIs                │
 │  └─ dim_device_registry    → SCD Type 2 device dimension    │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    UNITY CATALOG (Governance)                │
+│                    UNITY CATALOG (Governance)               │
 │  ✓ Column-level security on patient_id                      │
 │  ✓ Role-based grants: engineers / nurses / analysts         │
 │  ✓ Audit logging on all table access                        │
@@ -77,6 +77,10 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
 ```
 
 ---
+<img width="3856" height="2434" alt="icu_pulse_dashboard" src="https://github.com/user-attachments/assets/7573b88a-1d20-4cd9-9627-301bfd895e3b" />
+
+---
+
 
 ## Clinical Anomaly Detection
 
