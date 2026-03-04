@@ -28,7 +28,7 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    50 ICU DEVICES (simulated)                │
+│                    50 ICU DEVICES (simulated)               │
 │        Heart Rate · SpO2 · Blood Pressure · every 5 min     │
 └──────────────────────────┬──────────────────────────────────┘
                            │
