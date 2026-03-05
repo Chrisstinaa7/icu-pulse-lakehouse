@@ -78,6 +78,7 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
 ## Architectural Diagram
 <img width="1024" height="1536" alt="ChatGPT Image Mar 5, 2026, 10_06_27 AM" src="https://github.com/user-attachments/assets/798a04de-02a4-4b78-bcd2-f3f6a0fc5d02" />
 
+---
 ## Dashboard
 
 <img width="3856" height="2434" alt="icu_pulse_dashboard" src="https://github.com/user-attachments/assets/7573b88a-1d20-4cd9-9627-301bfd895e3b" />
@@ -131,42 +132,6 @@ If current reading deviates **> 20%** from that rolling average → `WARNING`
 | `WARNING` | No threshold breach but >20% sudden deviation from rolling avg |
 | `WATCH` | Slightly elevated/low — not critical |
 | `NORMAL` | All vitals within expected range |
-
----
-
-## Key Technical Decisions
-
-### Why `MERGE` over `INSERT OVERWRITE`?
-
-`MERGE` is idempotent — the pipeline can fail and restart without creating duplicates. `INSERT OVERWRITE` can't handle late-arriving records without full reprocessing. Trade-off: `MERGE` is ~4x slower, mitigated by including `event_date` in the merge key so Delta only reads today's partition.
-
-### Why partition by `event_date` not `ingestion_date`?
-
-Clinical queries ask *"show me vitals from January 5th"* — that's when the vital was **measured**, not when we received it. Partitioning on the query dimension means those queries read exactly one partition.
-
-### Why Event Hubs over IoT Hub?
-
-This use case is unidirectional — devices push vitals, nothing sends commands back. Event Hubs is Kafka-compatible, integrates natively with Spark Structured Streaming, and is cheaper for pure ingest. IoT Hub adds device management complexity (twin state, C2D messaging, firmware updates) that isn't needed here.
-
-### Why three Gold tables instead of one?
-
-Different consumers, different security requirements:
-- **Nursing station** — needs patient-level alerts, sub-second response, `patient_id` included
-- **Analysts** — need aggregate device metrics, no patient identity
-- **Management** — need daily KPIs only
-
-One generic table would slow real-time queries and make access control messy. Purpose-built tables mean analysts structurally cannot see patient data — it's not in their table.
-
-### Why SCD Type 2 for the device registry?
-
-Devices move between patients in a real ICU. Without history, you can't prove which patient owned a given reading after reassignment. SCD Type 2 tracks every assignment with `effective_from` / `effective_to` dates.
-
-Temporal join:
-```sql
-vitals.event_date BETWEEN dim.effective_from AND dim.effective_to
-```
-
-Correctly attributes every historical reading to the right patient — critical for compliance and retrospective clinical analysis.
 
 ---
 
