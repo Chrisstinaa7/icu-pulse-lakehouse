@@ -75,8 +75,11 @@ I designed this around a hypothetical 50-bed ICU scenario — St. Meridian Medic
 │  ✓ Audit logging on all table access                        │
 └─────────────────────────────────────────────────────────────┘
 ```
+## Architectural Diagram
+<img width="1024" height="1536" alt="ChatGPT Image Mar 5, 2026, 10_06_27 AM" src="https://github.com/user-attachments/assets/798a04de-02a4-4b78-bcd2-f3f6a0fc5d02" />
 
----
+## Dashboard
+
 <img width="3856" height="2434" alt="icu_pulse_dashboard" src="https://github.com/user-attachments/assets/7573b88a-1d20-4cd9-9627-301bfd895e3b" />
 
 ---
